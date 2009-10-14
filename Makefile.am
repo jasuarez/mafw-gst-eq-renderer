@@ -1,12 +1,17 @@
 #
 # Makefile.am for MAFW gst renderer library.
 #
-# Author: Visa Smolander <visa.smolander@nokia.com>
+# For original mafw-gst-renderer code:
+# 	Author: Visa Smolander <visa.smolander@nokia.com>
+#	Copyright (C) 2007, 2008, 2009 Nokia. All rights reserved.
 #
-# Copyright (C) 2007, 2008, 2009 Nokia. All rights reserved.
+# For mafw-gst-eq-renderer fork:
+#	Author: Juan A. Suarez Romero <jasuarez@igalia.com>
+#	Copyright (C) 2009 Igalia S.L.
+#
 
 
-SUBDIRS				= libmafw-gst-renderer
+SUBDIRS				= libmafw-gst-renderer equalizer
 
 #if ENABLE_TESTS
 #SUBDIRS				+= tests

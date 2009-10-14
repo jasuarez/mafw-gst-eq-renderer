@@ -218,6 +218,22 @@ dnl GConf path
 GCONF_MAFW_GST_EQ_RENDERER=/system/mafw/mafw-gst-eq-renderer
 AC_SUBST(GCONF_MAFW_GST_EQ_RENDERER)
 
+Control Panel
+PKG_CHECK_MODULES([MAFW_EQUALIZER_CPA], [libosso >= 2.0
+                                        hildon-1 >= 2.1
+                                        hildon-control-panel
+                                        gtk+-2.0
+                                        gconf-2.0
+                                        libxml-2.0])
+
+CPA_PLUGINDIR=`pkg-config hildon-control-panel --variable=pluginlibdir`
+CPA_DESKTOPDIR=`pkg-config hildon-control-panel --variable=plugindesktopentrydir`
+
+AC_SUBST(MAFW_EQUALIZER_CPA_CFLAGS)
+AC_SUBST(MAFW_EQUALIZER_CPA_LIBS)
+AC_SUBST(CPA_DESKTOPDIR)
+AC_SUBST(CPA_PLUGINDIR)
+
 dnl Output files.
 
 AC_CONFIG_FILES([
@@ -225,6 +241,8 @@ AC_CONFIG_FILES([
   mafw-gst-renderer-uninstalled.pc
   libmafw-gst-renderer/gconf-keys.h
   libmafw-gst-renderer/Makefile
+  equalizer/gconf-keys.h
+  equalizer/Makefile
   tests/Makefile
   debian/mafw-gst-eq-renderer.install
 ])

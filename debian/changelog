@@ -2,5 +2,6 @@ mafw-gst-eq-renderer (0.1.2009.38-1) unstable; urgency=low
 
   * Import mafw-gst-renderer 0.1.2009.38-1.
   * Add equalizer to pipeline
+  * Add a Control Panel Applet Equalizer
 
  -- Juan A. Suarez Romero  <jasuarez@igalia.com>  Tue, 13 Oct 2009 07:56:58 +0200

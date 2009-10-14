@@ -1,0 +1,9 @@
+[Desktop Entry] 
+Encoding=UTF-8
+Version=1.0
+Name=MAFW Equalizer
+Comment=Control panel to configure equalizer for mafw-gst-eq-renderer
+Type=HildonControlPanelPlugin
+Icon=qgn_list_cp_isetup
+X-control-panel-plugin=libmafw-equalizer.so
+Categories=extras

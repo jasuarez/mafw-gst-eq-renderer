@@ -1,1 +1,4 @@
 @plugindir@/*.so
+@CPA_PLUGINDIR@/*.so*
+@CPA_DESKTOPDIR@/*.desktop
+
