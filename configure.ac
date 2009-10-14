@@ -1,12 +1,17 @@
 #
-# configure.ac for MAFW gstreamer renderer library
+# configure.ac for MAFW gstreamer renderer with equalizer library
 # 
-# Author: Visa Smolander <visa.smolander@nokia.com>
+# For original mafw-gst-renderer code:
+#     Copyright (C) 2007, 2008, 2009 Nokia. All rights reserved.
+#     Author: Visa Smolander <visa.smolander@nokia.com>
 #
-# Copyright (C) 2007, 2008, 2009 Nokia. All rights reserved.
+# For mafw-gst-eq-renderer fork:
+#     Copyright (C) 2009 Igalia S.L.
+#     Author: Juan A. Suarez Romero <jasuarez@igalia.com>
+#
 
 AC_PREREQ([2.53])
-AC_INIT([mafw-gst-renderer], [0.1.2009.38-1])
+AC_INIT([mafw-gst-eq-renderer], [0.1.2009.38-1])
 
 AC_CONFIG_SRCDIR([libmafw-gst-renderer/mafw-gst-renderer.h])
 AC_CONFIG_HEADERS([config.h])
@@ -209,14 +214,19 @@ fi
 AM_CONDITIONAL(ENABLE_COVERAGE,
                [test "x$enable_coverage" != xno && test -n "$LCOV"])
 
+dnl GConf path
+GCONF_MAFW_GST_EQ_RENDERER=/system/mafw/mafw-gst-eq-renderer
+AC_SUBST(GCONF_MAFW_GST_EQ_RENDERER)
+
 dnl Output files.
 
 AC_CONFIG_FILES([
   Makefile
   mafw-gst-renderer-uninstalled.pc
+  libmafw-gst-renderer/gconf-keys.h
   libmafw-gst-renderer/Makefile
   tests/Makefile
-  debian/mafw-gst-renderer.install
+  debian/mafw-gst-eq-renderer.install
 ])
 
 AC_OUTPUT

@@ -1,7 +1,7 @@
-Source: mafw-gst-renderer
+Source: mafw-gst-eq-renderer
 Section: misc
 Priority: optional
-Maintainer: Juha Kellokoski <veitikka6@gmail.com>
+Maintainer: Juan A. Suarez Romero <jasuarez@igalia.com>
 Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev,
                libgstreamer0.10-dev (>= 0.10.20-0maemo3),
                libgstreamer-plugins-base0.10-dev (>= 0.10.20-0maemo5),
@@ -12,17 +12,17 @@ Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev,
                libgconf2-dev, libosso-gnomevfs2-dev
 Standards-Version: 3.7.2
 
-Package: mafw-gst-renderer
+Package: mafw-gst-eq-renderer
 Section: libs
 Architecture: any
 Depends: gconf2, ${shlibs:Depends}, ${misc:Depends}
-Description: MAFW gst renderer plugin
- Renderer plugin for MAFW-gst
+Description: MAFW gst renderer with equalizer plugin
+ Renderer plugin for MAFW-gst-eq
 
-Package: mafw-gst-renderer-dbg
+Package: mafw-gst-eq-renderer-dbg
 Section: devel
 Architecture: any
 Priority: extra
-Depends: mafw-gst-renderer (= ${binary:Version})
-Description: debug symbols for mafw-gst-renderer
- MAFW-gst renderer debug symbols
+Depends: mafw-gst-eq-renderer (= ${binary:Version})
+Description: debug symbols for mafw-gst-eq-renderer
+ MAFW-gst-eq renderer debug symbols

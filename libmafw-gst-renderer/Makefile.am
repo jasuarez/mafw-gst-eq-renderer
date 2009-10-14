@@ -1,9 +1,14 @@
 #
 # Makefile.am for MAFW gst renderer library.
 #
-# Author: Zeeshan Ali <zeeshan.ali@nokia.com>
+# For original mafw-gst-renderer code:
+# 	Author: Zeeshan Ali <zeeshan.ali@nokia.com>
+# 	Copyright (C) 2007, 2008, 2009 Nokia. All rights reserved.
 #
-# Copyright (C) 2007, 2008, 2009 Nokia. All rights reserved.
+# For mafw-gst-eq-renderer fork:
+# 	Author: Juan A. Suarez Romero <jasuarez@igalia.com>
+#	Copyright (C) 2009 Igalia S.L.
+#
 
 plugin_LTLIBRARIES		= mafw-gst-renderer.la
 
@@ -11,6 +16,7 @@ BUILT_SOURCES			= mafw-gst-renderer-marshal.c \
 				  mafw-gst-renderer-marshal.h
 
 mafw_gst_renderer_la_SOURCES	= $(BUILT_SOURCES) \
+				  gconf-keys.h \
 				  blanking.c blanking.h \
 				  mafw-gst-renderer.c mafw-gst-renderer.h \
 				  mafw-gst-renderer-utils.c mafw-gst-renderer-utils.h \

@@ -1,9 +1,13 @@
 /*
- * This file is a part of MAFW
+ * This file is a part of MAFW and MAFW-GST-EQ-RENDERER
  *
- * Copyright (C) 2007, 2008, 2009 Nokia Corporation, all rights reserved.
+ * For original mafw-gst-renderer code:
+ *    Copyright (C) 2007, 2008, 2009 Nokia Corporation, all rights reserved.
+ *    Contact: Visa Smolander <visa.smolander@nokia.com>
  *
- * Contact: Visa Smolander <visa.smolander@nokia.com>
+ * For mafw-gst-eq-renderer fork:
+ *    Copyright (C) 2009 Igalia S.L.
+ *    Author: Juan A. Suarez Romero <jasuarez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,6 +25,7 @@
  * 02110-1301 USA
  *
  */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -45,6 +50,7 @@
 #include "mafw-gst-renderer-worker.h"
 #include "mafw-gst-renderer-utils.h"
 #include "blanking.h"
+#include "gconf-keys.h"
 
 #undef  G_LOG_DOMAIN
 #define G_LOG_DOMAIN "mafw-gst-renderer-worker"
@@ -1782,13 +1788,29 @@ static void _construct_pipeline(MafwGstRendererWorker *worker)
 	g_signal_connect(worker->pipeline, "notify::stream-info",
 			 G_CALLBACK(_stream_info_cb), worker);
 
+        /* Add an equalizer */
+        if (!worker->equalizer) {
+                worker->equalizer =
+                        gst_element_factory_make("equalizer-10bands", NULL);
+                if (!worker->equalizer) {
+                        g_critical("Failed to create pipeline equalizer");
+                } else {
+                        gst_object_ref(worker->equalizer);
+                }
+        }
+
 #ifndef MAFW_GST_RENDERER_DISABLE_PULSE_VOLUME
 	g_object_set(worker->pipeline, "flags", 99, NULL);
+#endif
 
 	/* Set audio and video sinks ourselves. We create and configure
 	   them only once. */
 	if (!worker->asink) {
+#ifndef MAFW_GST_RENDERER_DISABLE_PULSE_VOLUME
 		worker->asink = gst_element_factory_make("pulsesink", NULL);
+#else
+                worker->asink = gst_element_factory_make("autoaudiosink", NULL);
+#endif
 		if (!worker->asink) {
 			g_critical("Failed to create pipeline audio sink");
 			g_signal_emit_by_name(MAFW_EXTENSION (worker->owner), 
@@ -1799,13 +1821,43 @@ static void _construct_pipeline(MafwGstRendererWorker *worker)
 			g_assert_not_reached();
 		}
 		gst_object_ref(worker->asink);
+#ifndef MAFW_GST_RENDERER_DISABLE_PULSE_VOLUME
 		g_object_set(worker->asink, "buffer-time", 
 			     (gint64) MAFW_GST_BUFFER_TIME, NULL);
 		g_object_set(worker->asink, "latency-time", 
 			     (gint64) MAFW_GST_LATENCY_TIME, NULL);
-	}
-	g_object_set(worker->pipeline, "audio-sink", worker->asink, NULL);
 #endif
+
+                if (worker->equalizer) {
+                        /* Put equalizer + asink in the bin */
+                        worker->abin = gst_bin_new("audiobin");
+                        gst_object_ref(worker->abin);
+
+                        gst_bin_add_many(GST_BIN(worker->abin),
+                                         worker->equalizer,
+                                         worker->asink,
+                                         NULL);
+
+                        GstPad *pad = gst_element_get_pad(worker->equalizer,
+                                                          "sink");
+                        gst_element_add_pad(worker->abin,
+                                            gst_ghost_pad_new("sink", pad));
+                        gst_object_unref(pad);
+
+                        gst_element_link_many(worker->equalizer,
+                                              worker->asink,
+                                              NULL);
+                }
+	}
+
+        if (worker->abin) {
+                g_object_set(worker->pipeline, "audio-sink",
+                             worker->abin, NULL);
+        } else {
+                g_object_set(worker->pipeline, "audio-sink",
+                             worker->asink, NULL);
+        }
+
 
 	if (!worker->vsink) {
 		worker->vsink = gst_element_factory_make("xvimagesink", NULL);
@@ -2330,8 +2382,10 @@ MafwGstRendererWorker *mafw_gst_renderer_worker_new(gpointer owner)
 	worker->xid = 0;
 	worker->autopaint = TRUE;
 	worker->colorkey = -1;
+        worker->equalizer = NULL;
 	worker->vsink = NULL;
 	worker->asink = NULL;
+        worker->abin = NULL;
 	worker->tag_list = NULL;
 	worker->current_metadata = NULL;
 

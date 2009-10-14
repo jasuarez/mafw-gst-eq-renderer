@@ -1,9 +1,13 @@
 /*
- * This file is a part of MAFW
+ * This file is a part of MAFW and MAFW-GST-EQ-RENDERER
  *
- * Copyright (C) 2007, 2008, 2009 Nokia Corporation, all rights reserved.
+ * For original mafw-gst-renderer code:
+ *    Copyright (C) 2007, 2008, 2009 Nokia Corporation, all rights reserved.
+ *    Contact: Visa Smolander <visa.smolander@nokia.com>
  *
- * Contact: Visa Smolander <visa.smolander@nokia.com>
+ * For mafw-gst-eq-renderer fork:
+ *    Copyright (C) Igalia S.L.
+ *    Author: Juan A. Suarez Romero <jasuarez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,6 +25,7 @@
  * 02110-1301 USA
  *
  */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -42,6 +47,8 @@
 #include "mafw-gst-renderer-state-transitioning.h"
 
 #include "blanking.h"
+
+#include "gconf-keys.h"
 
 #ifdef HAVE_CONIC
 #include <conicconnectionevent.h>
@@ -94,6 +101,11 @@ static void _battery_cover_open_cb(GConfClient *client,
 				   guint cnxn_id,
 				   GConfEntry *entry,
 				   MafwGstRenderer *renderer);
+
+static void _gst_equalizer_changed_cb(GConfClient *client,
+                                      guint cnxn_id,
+                                      GConfEntry *entry,
+                                      MafwGstRenderer *renderer);
 
 /*----------------------------------------------------------------------------
   Gnome VFS notifications
@@ -346,6 +358,54 @@ static void mafw_gst_renderer_init(MafwGstRenderer *self)
 		g_warning("%s", error->message);
 		g_error_free(error);
 	}
+
+        /* Listen for changes in stored gconf equalizer values */
+        gconf_client_add_dir(renderer->gconf_client,
+                             GCONF_MAFW_GST_EQ_RENDERER,
+                             GCONF_CLIENT_PRELOAD_ONELEVEL,
+                             &error);
+
+	if (error) {
+		g_warning("%s", error->message);
+		g_error_free(error);
+		error = NULL;
+	}
+
+	gconf_client_notify_add(
+                renderer->gconf_client,
+                GCONF_MAFW_GST_EQ_RENDERER,
+                (GConfClientNotifyFunc) _gst_equalizer_changed_cb,
+                renderer,
+                NULL, &error);
+
+	if (error) {
+		g_warning("%s", error->message);
+		g_error_free(error);
+	}
+
+        /* Initialize equalizer values */
+        if (self->worker->equalizer) {
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band0");
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band1");
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band2");
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band3");
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band4");
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band5");
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band6");
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band7");
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band8");
+                gconf_client_notify(renderer->gconf_client,
+                                    GCONF_MAFW_GST_EQ_RENDERER "/band9");
+        }
 
 	if (gnome_vfs_init()) {
 		GnomeVFSVolumeMonitor *monitor = gnome_vfs_get_volume_monitor();
@@ -828,6 +888,44 @@ static void _battery_cover_open_cb(GConfClient *client,
 				renderer->states[renderer->current_state]),
 			         emmc_path);
 	}
+}
+
+static void _gst_equalizer_changed_cb(GConfClient *client,
+                                      guint cnxn_id,
+                                      GConfEntry *entry,
+                                      MafwGstRenderer *renderer)
+{
+        const gchar *key;
+        GConfValue *value;
+        gdouble gain;
+
+        if (G_UNLIKELY(!renderer->worker->equalizer)) {
+                g_warning("There is no equalizer component");
+                return;
+        }
+
+        key = gconf_entry_get_key(entry);
+
+        /* Only key without absolute path is required */
+        key += strlen(GCONF_MAFW_GST_EQ_RENDERER) + 1;
+
+        /* Check key soundness */
+        if (strncmp(key, "band", 4) == 0 &&
+            key[4] >= '0' && key[4] <= '9' &&
+            key[5] == '\0') {
+                value = gconf_entry_get_value(entry);
+                if (!value) {
+                        gain = 0.0;
+                } else {
+                        gain = CLAMP(gconf_value_get_float(value),
+                                     -24.0, +12.0);
+                }
+                g_debug("Equalizer changed (%s = %f dB)", key, gain);
+                g_object_set(renderer->worker->equalizer,
+                             key, gain, NULL);
+        } else {
+                g_warning("Wrong %s key, %s", GCONF_MAFW_GST_EQ_RENDERER, key);
+        }
 }
 
 /*----------------------------------------------------------------------------

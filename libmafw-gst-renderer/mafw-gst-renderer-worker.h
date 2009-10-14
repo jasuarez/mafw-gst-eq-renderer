@@ -1,9 +1,13 @@
 /*
- * This file is a part of MAFW
+ * This file is a part of MAFW and MAFW-GST-EQ-RENDERER
  *
- * Copyright (C) 2007, 2008, 2009 Nokia Corporation, all rights reserved.
+ * For original mafw-gs-renderer code:
+ *    Copyright (C) 2007, 2008, 2009 Nokia Corporation, all rights reserved.
+ *    Contact: Visa Smolander <visa.smolander@nokia.com>
  *
- * Contact: Visa Smolander <visa.smolander@nokia.com>
+ * For mafw-gst-eq-renderer fork:
+ *    Copyright (C) Igalia S.L.
+ *    Author: Juan A. Suarez Romero <jasuarez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -21,6 +25,7 @@
  * 02110-1301 USA
  *
  */
+
 #ifndef MAFW_GST_RENDERER_WORKER_H
 #define MAFW_GST_RENDERER_WORKER_H
 
@@ -79,8 +84,10 @@ typedef enum {
  * async_bus_id:        ID handle for GstBus
  * buffer_probe_id:     ID of the video renderer buffer probe
  * seek_position:       Indicates the pos where to seek, in seconds
+ * equalizer:           Equalizer element of the pipeline
  * vsink:               Video sink element of the pipeline
  * asink:               Audio sink element of the pipeline
+ * abin:                A bin containing equalizer + asink
  * xid:                 XID for video playback
  * current_frame_on_pause: whether to emit current frame when pausing
  */
@@ -148,8 +155,10 @@ struct _MafwGstRendererWorker {
 	 * again.
 	 */
 	gboolean in_ready;
+        GstElement *equalizer;
 	GstElement *vsink;
 	GstElement *asink;
+        GstElement *abin;
 	XID xid;
 	gboolean autopaint;
 	gint colorkey;
