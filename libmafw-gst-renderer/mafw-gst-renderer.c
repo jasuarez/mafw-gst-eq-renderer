@@ -176,7 +176,7 @@ static void _connection_init(MafwGstRenderer *renderer);
  * Registers the plugin descriptor making this plugin available to the
  * framework and applications
  */
-G_MODULE_EXPORT MafwPluginDescriptor mafw_gst_eq_renderer_plugin_description = {
+G_MODULE_EXPORT MafwPluginDescriptor mafw_gst_renderer_plugin_description = {
 	{ .name		= MAFW_GST_RENDERER_PLUGIN_NAME },
 	.initialize	= mafw_gst_renderer_initialize,
 	.deinitialize	= mafw_gst_renderer_deinitialize,
