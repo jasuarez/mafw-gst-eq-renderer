@@ -48,7 +48,7 @@
 
 #include "blanking.h"
 
-#include "gconf-keys.h"
+#include "constants.h"
 
 #ifdef HAVE_CONIC
 #include <conicconnectionevent.h>

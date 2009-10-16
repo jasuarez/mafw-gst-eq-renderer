@@ -36,7 +36,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-#include "gconf-keys.h"
+#include "constants.h"
 
 #define BAND_MIN -24
 #define BAND_MAX +12
