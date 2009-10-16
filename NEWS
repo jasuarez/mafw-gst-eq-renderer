@@ -4,4 +4,5 @@
   * Based on mafw-gst-renderer 0.1.2009.38-1
   * Added equalizing support
   * Created a Control Panel to set equalizer
+  * Add predefined presets
 
