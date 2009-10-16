@@ -218,7 +218,7 @@ dnl GConf path
 GCONF_MAFW_GST_EQ_RENDERER=/system/mafw/mafw-gst-eq-renderer
 AC_SUBST(GCONF_MAFW_GST_EQ_RENDERER)
 
-Control Panel
+dnl Control Panel
 PKG_CHECK_MODULES([MAFW_EQUALIZER_CPA], [libosso >= 2.0
                                         hildon-1 >= 2.1
                                         hildon-control-panel
