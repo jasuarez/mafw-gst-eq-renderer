@@ -38,8 +38,6 @@
 
 #include "constants.h"
 
-#define BAND_MIN -24
-#define BAND_MAX +12
 #define NUM_BANDS 10
 
 #define PRESETS_PATH "/home/user/.presets"
@@ -88,7 +86,7 @@ static gdouble get_band_value(gint band)
         value =  gconf_client_get_float(confclient, key, NULL);
         g_free(key);
 
-        return CLAMP(value, BAND_MIN, BAND_MAX);
+        return CLAMP(value, EQ_GAIN_MIN, EQ_GAIN_MAX);
 }
 
 
@@ -509,8 +507,8 @@ execute(osso_context_t *osso, gpointer data, gboolean user_activated)
         /* Create the bands */
         for (i = 0; i < NUM_BANDS; i++) {
                 slider_band[i] = hildon_gtk_vscale_new();
-                adj[i] = gtk_adjustment_new(BAND_MIN,BAND_MIN,
-                                            BAND_MAX, 1, 10, 0);
+                adj[i] = gtk_adjustment_new(EQ_GAIN_MIN, EQ_GAIN_MIN,
+                                            EQ_GAIN_MAX, 1, 10, 0);
                 gtk_range_set_adjustment(GTK_RANGE(slider_band[i]),
                                          GTK_ADJUSTMENT(adj[i]));
 

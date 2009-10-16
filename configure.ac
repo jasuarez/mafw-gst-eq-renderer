@@ -218,6 +218,12 @@ dnl GConf path
 GCONF_MAFW_GST_EQ_RENDERER=/system/mafw/mafw-gst-eq-renderer
 AC_SUBST(GCONF_MAFW_GST_EQ_RENDERER)
 
+dnl Min/Max gain for each band in equalizer
+EQ_GAIN_MIN=-24
+EQ_GAIN_MAX=+12
+AC_SUBST(EQ_GAIN_MIN)
+AC_SUBST(EQ_GAIN_MAX)
+
 dnl Control Panel
 PKG_CHECK_MODULES([MAFW_EQUALIZER_CPA], [libosso >= 2.0
                                         hildon-1 >= 2.1
