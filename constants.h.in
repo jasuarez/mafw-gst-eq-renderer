@@ -30,5 +30,7 @@
 #define EQ_GAIN_MIN @EQ_GAIN_MIN@
 #define EQ_GAIN_MAX @EQ_GAIN_MAX@
 
+#define HOME_PRESETS "@HOME_PRESETS@"
+
 #endif
 

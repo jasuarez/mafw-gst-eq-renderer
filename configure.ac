@@ -224,6 +224,10 @@ EQ_GAIN_MAX=+12
 AC_SUBST(EQ_GAIN_MIN)
 AC_SUBST(EQ_GAIN_MAX)
 
+dnl Path were presets will be stored
+HOME_PRESETS=/home/user/.mafw-gst-eq-presets
+AC_SUBST(HOME_PRESETS)
+
 dnl Control Panel
 PKG_CHECK_MODULES([MAFW_EQUALIZER_CPA], [libosso >= 2.0
                                         hildon-1 >= 2.1
