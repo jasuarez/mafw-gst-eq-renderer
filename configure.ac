@@ -244,10 +244,9 @@ dnl Output files.
 
 AC_CONFIG_FILES([
   Makefile
+  constants.h
   mafw-gst-renderer-uninstalled.pc
-  libmafw-gst-renderer/constants.h
   libmafw-gst-renderer/Makefile
-  equalizer/constants.h
   equalizer/Makefile
   tests/Makefile
   debian/mafw-gst-eq-renderer.install

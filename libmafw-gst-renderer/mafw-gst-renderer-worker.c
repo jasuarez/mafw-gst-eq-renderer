@@ -50,7 +50,7 @@
 #include "mafw-gst-renderer-worker.h"
 #include "mafw-gst-renderer-utils.h"
 #include "blanking.h"
-#include "constants.h"
+#include "../constants.h"
 
 #undef  G_LOG_DOMAIN
 #define G_LOG_DOMAIN "mafw-gst-renderer-worker"

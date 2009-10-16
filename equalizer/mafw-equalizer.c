@@ -36,7 +36,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-#include "constants.h"
+#include "../constants.h"
 
 #define NUM_BANDS 10
 
