@@ -11,7 +11,7 @@
 #
 
 
-SUBDIRS				= libmafw-gst-renderer equalizer
+SUBDIRS				= libmafw-gst-renderer equalizer presets
 
 #if ENABLE_TESTS
 #SUBDIRS				+= tests

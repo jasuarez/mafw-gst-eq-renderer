@@ -36,13 +36,9 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-#include "gconf-keys.h"
+#include "../constants.h"
 
-#define BAND_MIN -24
-#define BAND_MAX +12
 #define NUM_BANDS 10
-
-#define PRESETS_PATH "/home/user/.presets"
 
 #define XML_NODE_BAND        "band"
 #define XML_NODE_EQUALIZER   "equalizer"
@@ -88,7 +84,7 @@ static gdouble get_band_value(gint band)
         value =  gconf_client_get_float(confclient, key, NULL);
         g_free(key);
 
-        return CLAMP(value, BAND_MIN, BAND_MAX);
+        return CLAMP(value, EQ_GAIN_MIN, EQ_GAIN_MAX);
 }
 
 
@@ -167,14 +163,14 @@ static GList *presets_preload_all(void)
         GList *preset_list = NULL;
         xmlDoc *preset_xml;
 
-        preset_path = g_dir_open(PRESETS_PATH, 0, &error);
+        preset_path = g_dir_open(HOME_PRESETS, 0, &error);
         if (error) {
                 return NULL;
         }
 
         /* Populate the list with valid presets */
         while ((preset_name = g_dir_read_name(preset_path)) != NULL) {
-                preset_fullname = g_strconcat(PRESETS_PATH, "/", preset_name,
+                preset_fullname = g_strconcat(HOME_PRESETS, "/", preset_name,
                                               NULL);
                 preset_xml = xmlReadFile(preset_fullname, NULL, 0);
                 if (preset_xml) {
@@ -263,7 +259,7 @@ static void preset_save(xmlDoc *preset, GtkWidget *slider_band[NUM_BANDS])
                 g_free(band_number);
         }
 
-        preset_fullname = g_strdup_printf ("%s/%s", PRESETS_PATH, preset->name);
+        preset_fullname = g_strdup_printf ("%s/%s", HOME_PRESETS, preset->name);
         xmlSaveFile(preset_fullname, preset);
         g_free(preset_fullname);
 }
@@ -461,7 +457,7 @@ static void delete_button_cb(GtkToolButton *toolbutton, gpointer user_data)
                 message = g_strdup_printf("Do you want to remove %s preset?",
                                           preset_name);
                 if (dialog_confirm(user_data, message) == GTK_RESPONSE_YES) {
-                        preset_fullname = g_strdup_printf("%s/%s", PRESETS_PATH,
+                        preset_fullname = g_strdup_printf("%s/%s", HOME_PRESETS,
                                                           preset_name);
                         g_unlink(preset_fullname);
                         g_free(preset_fullname);
@@ -509,8 +505,8 @@ execute(osso_context_t *osso, gpointer data, gboolean user_activated)
         /* Create the bands */
         for (i = 0; i < NUM_BANDS; i++) {
                 slider_band[i] = hildon_gtk_vscale_new();
-                adj[i] = gtk_adjustment_new(BAND_MIN,BAND_MIN,
-                                            BAND_MAX, 1, 10, 0);
+                adj[i] = gtk_adjustment_new(EQ_GAIN_MIN, EQ_GAIN_MIN,
+                                            EQ_GAIN_MAX, 1, 10, 0);
                 gtk_range_set_adjustment(GTK_RANGE(slider_band[i]),
                                          GTK_ADJUSTMENT(adj[i]));
 

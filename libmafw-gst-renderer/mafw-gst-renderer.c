@@ -48,7 +48,7 @@
 
 #include "blanking.h"
 
-#include "gconf-keys.h"
+#include "../constants.h"
 
 #ifdef HAVE_CONIC
 #include <conicconnectionevent.h>
@@ -918,7 +918,7 @@ static void _gst_equalizer_changed_cb(GConfClient *client,
                         gain = 0.0;
                 } else {
                         gain = CLAMP(gconf_value_get_float(value),
-                                     -24.0, +12.0);
+                                     EQ_GAIN_MIN, EQ_GAIN_MAX);
                 }
                 g_debug("Equalizer changed (%s = %f dB)", key, gain);
                 g_object_set(renderer->worker->equalizer,

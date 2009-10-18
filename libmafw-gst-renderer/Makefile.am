@@ -15,8 +15,8 @@ plugin_LTLIBRARIES		= mafw-gst-renderer.la
 BUILT_SOURCES			= mafw-gst-renderer-marshal.c \
 				  mafw-gst-renderer-marshal.h
 
-mafw_gst_renderer_la_SOURCES	= $(BUILT_SOURCES) \
-				  gconf-keys.h \
+mafw_gst_eq_renderer_la_SOURCES	= $(BUILT_SOURCES) \
+				  constants.h \
 				  blanking.c blanking.h \
 				  mafw-gst-renderer.c mafw-gst-renderer.h \
 				  mafw-gst-renderer-utils.c mafw-gst-renderer-utils.h \

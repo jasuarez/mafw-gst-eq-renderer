@@ -218,7 +218,17 @@ dnl GConf path
 GCONF_MAFW_GST_EQ_RENDERER=/system/mafw/mafw-gst-eq-renderer
 AC_SUBST(GCONF_MAFW_GST_EQ_RENDERER)
 
-Control Panel
+dnl Min/Max gain for each band in equalizer
+EQ_GAIN_MIN=-24
+EQ_GAIN_MAX=+12
+AC_SUBST(EQ_GAIN_MIN)
+AC_SUBST(EQ_GAIN_MAX)
+
+dnl Path were presets will be stored
+HOME_PRESETS=/home/user/.mafw-gst-eq-presets
+AC_SUBST(HOME_PRESETS)
+
+dnl Control Panel
 PKG_CHECK_MODULES([MAFW_EQUALIZER_CPA], [libosso >= 2.0
                                         hildon-1 >= 2.1
                                         hildon-control-panel
@@ -238,11 +248,11 @@ dnl Output files.
 
 AC_CONFIG_FILES([
   Makefile
+  constants.h
   mafw-gst-renderer-uninstalled.pc
-  libmafw-gst-renderer/gconf-keys.h
   libmafw-gst-renderer/Makefile
-  equalizer/gconf-keys.h
   equalizer/Makefile
+  presets/Makefile
   tests/Makefile
   debian/mafw-gst-renderer.install
 ])

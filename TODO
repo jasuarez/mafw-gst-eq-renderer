@@ -1,0 +1,5 @@
+Some features it would be good to implement:
+
+  * Add a cool icon to Control Panel applet.
+  * Separate the applet in a different package, so user can decide if really he needs the applet.
+

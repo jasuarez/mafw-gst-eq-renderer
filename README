@@ -1,0 +1,21 @@
+This is a fork of original mafw-gst-renderer that comes with MAFW package. It
+adds a 10-band equalizer to the renderer.
+
+Equalizer values for each band are stored in gconf (branch
+/system/mafw/mafw-gst-eq-renderer/band<n>, where n=[0..9] corresponds to bands
+29Hz, 59Hz, 119Hz, 227Hz, 474Hz, 947Hz, 1889Hz, 3770Hz, 7523Hz and 15011Hz,
+respectively). Each value is the gain for that band, being between -24dB and
++12dB.
+
+To set equalizer, one must change the value in gconf; the renderer will react
+inmediately and update the corresponding value in gstreamer's equalizer.
+
+In case the application client does not provide a utility to change the
+equalizer, a Control Panel applet is provided too, that shows a graphical
+equalizer that user can use to set the equalizer. This applet allows also to
+save, load and delete presets.
+
+Building this plugin will generate a package called 'mafw-gst-eq-renderer'. The
+obtained plugin is named 'Mafw-Gst-Eq-Renderer-Plugin', while the UUID for this
+renderer is 'gsteqrenderer'.
+
