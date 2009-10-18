@@ -2,6 +2,7 @@ dist_presets_DATA =	Bass		\
 			Classical	\
 			Club		\
 			Dance		\
+			Flat		\
 			Hall		\
 			Headphones	\
 			Live		\
