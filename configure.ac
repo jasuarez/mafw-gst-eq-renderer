@@ -252,6 +252,7 @@ AC_CONFIG_FILES([
   mafw-gst-renderer-uninstalled.pc
   libmafw-gst-renderer/Makefile
   equalizer/Makefile
+  presets/Makefile
   tests/Makefile
   debian/mafw-gst-eq-renderer.install
 ])
