@@ -1,0 +1,6 @@
+#!/bin/sh
+
+#DEBHELPER#
+
+test -x /usr/bin/mafw.sh && /usr/bin/mafw.sh start mafw-gst-eq-renderer -7 \
+|| true;

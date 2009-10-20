@@ -11,7 +11,7 @@
 #
 
 AC_PREREQ([2.53])
-AC_INIT([mafw-gst-renderer], [0.1.2009.38+equalizer-1])
+AC_INIT([mafw-gst-eq-renderer], [0.1.2009.38-1])
 
 AC_CONFIG_SRCDIR([libmafw-gst-renderer/mafw-gst-renderer.h])
 AC_CONFIG_HEADERS([config.h])
@@ -254,7 +254,7 @@ AC_CONFIG_FILES([
   equalizer/Makefile
   presets/Makefile
   tests/Makefile
-  debian/mafw-gst-renderer.install
+  debian/mafw-gst-eq-renderer.install
 ])
 
 AC_OUTPUT

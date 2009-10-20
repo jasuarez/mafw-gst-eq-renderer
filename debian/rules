@@ -72,7 +72,7 @@ binary-arch: build install
 	dh_installdocs
 	dh_install --sourcedir=debian/tmp -v
 	dh_link
-	dh_strip --dbg-package=mafw-gst-renderer
+	dh_strip --dbg-package=mafw-gst-eq-renderer
 	dh_compress
 	dh_fixperms
 	dh_installdeb
