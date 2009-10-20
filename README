@@ -16,6 +16,6 @@ equalizer that user can use to set the equalizer. This applet allows also to
 save, load and delete presets.
 
 Building this plugin will generate a package called 'mafw-gst-eq-renderer'. The
-obtained plugin is named 'Mafw-Gst-Eq-Renderer-Plugin', while the UUID for this
-renderer is 'gsteqrenderer'.
+obtained plugin is named 'Mafw-Gst-Eq-Renderer-Plugin', the source is
+'Mafw-Gst-Eq-Renderer' and  the UUID for this renderer is 'gsteqrenderer'.
 
