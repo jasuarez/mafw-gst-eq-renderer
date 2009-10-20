@@ -16,6 +16,7 @@ Package: mafw-gst-eq-renderer
 Section: libs
 Architecture: any
 Depends: gconf2, ${shlibs:Depends}, ${misc:Depends}
+Provides: mafw-gst-renderer
 Description: MAFW gst renderer with equalizer plugin
  Renderer plugin for MAFW-gst-eq
 
@@ -24,5 +25,6 @@ Section: devel
 Architecture: any
 Priority: extra
 Depends: mafw-gst-eq-renderer (= ${binary:Version})
+Provides: mafw-gst-renderer-dbg
 Description: debug symbols for mafw-gst-eq-renderer
  MAFW-gst-eq renderer debug symbols
