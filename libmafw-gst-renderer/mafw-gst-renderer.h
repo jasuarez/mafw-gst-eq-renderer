@@ -96,11 +96,11 @@ typedef enum {
 #define MAFW_GST_RENDERER_ERROR (mafw_gst_renderer_error_quark ())
 
 /* Gst renderer plugin name for the plugin descriptor */
-#define MAFW_GST_RENDERER_PLUGIN_NAME "Mafw-Gst-Eq-Renderer-Plugin"
+#define MAFW_GST_RENDERER_PLUGIN_NAME "Mafw-Gst-Renderer-Plugin"
 /* Gst renderer name */
-#define MAFW_GST_RENDERER_NAME "Mafw-Gst-Eq-Renderer"
+#define MAFW_GST_RENDERER_NAME "Mafw-Gst-Renderer"
 /* Gst renderer UUID */
-#define MAFW_GST_RENDERER_UUID "gsteqrenderer"
+#define MAFW_GST_RENDERER_UUID "gstrenderer"
 
 /*----------------------------------------------------------------------------
   Type definitions
