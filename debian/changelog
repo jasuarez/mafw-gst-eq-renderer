@@ -1,4 +1,4 @@
-mafw-gst-eq-renderer (0.1.2009.38-1) unstable; urgency=low
+mafw-gst-eq-renderer (0.1.2009.38-1+1mgr) unstable; urgency=low
 
   * Import mafw-gst-renderer 0.1.2009.38-1.
   * Add equalizer to pipeline
