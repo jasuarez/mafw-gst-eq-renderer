@@ -255,6 +255,7 @@ AC_CONFIG_FILES([
   presets/Makefile
   tests/Makefile
   debian/mafw-gst-eq-renderer.install
+  debian/mafw-gst-eq-renderer.postinst
 ])
 
 AC_OUTPUT
