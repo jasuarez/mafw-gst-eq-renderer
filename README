@@ -19,3 +19,25 @@ Building this plugin will generate a package called 'mafw-gst-eq-renderer'. The
 obtained plugin is named 'Mafw-Gst-Renderer-Plugin', the source is
 'Mafw-Gst-Renderer' and  the UUID for this renderer is 'gstrenderer'.
 
+
+
+
+How to install
+==============
+
+As this plugin provides the same functionality as mafw-gst-renderer, it is
+intended to replace it. Moreover, it should replace it, as it uses the same
+plugin name, source name and UUID.
+
+The suggested steps are the following ones:
+
+1) Install the package
+2) Remove mafw-gst-renderer
+
+If you are still unable to play a song, then mafw-gst-eq-renderer plugin must
+be restarted. This can be done rebooting the device, or stoping/starting the
+plugin from a terminal:
+
+  $ mafw.sh stop mafw-gst-eq-renderer
+  $ sudo mafw.sh start mafw-gst-eq-renderer -7
+
