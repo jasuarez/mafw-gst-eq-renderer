@@ -1,7 +1,7 @@
 <equalizer name="Flat (no equalizer)">
   <band num="0">0</band>
   <band num="1">0</band>
-  <band num="2">0/band>
+  <band num="2">0</band>
   <band num="3">0</band>
   <band num="4">0</band>
   <band num="5">0</band>

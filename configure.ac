@@ -11,7 +11,7 @@
 #
 
 AC_PREREQ([2.53])
-AC_INIT([mafw-gst-eq-renderer], [0.1.2009.38-1-1mgr])
+AC_INIT([mafw-gst-eq-renderer], [0.1.2009.38-1-2mgr])
 
 AC_CONFIG_SRCDIR([libmafw-gst-renderer/mafw-gst-renderer.h])
 AC_CONFIG_HEADERS([config.h])
@@ -255,6 +255,7 @@ AC_CONFIG_FILES([
   presets/Makefile
   tests/Makefile
   debian/mafw-gst-eq-renderer.install
+  debian/mafw-gst-eq-renderer.postinst
 ])
 
 AC_OUTPUT

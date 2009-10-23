@@ -1,3 +1,10 @@
+0.1.2009.38-2
+=============
+
+  * Fixed a bug that was preventing changing, creating or deleting presets
+  * Fixed Flat preset, so now it is usable
+
+
 0.1.2009.38-1
 =============
 

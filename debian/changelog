@@ -1,3 +1,10 @@
+mafw-gst-eq-renderer (0.1.2009.38-1-2mgr) unstable; urgency=low
+
+  * Fix permissions in presets.
+  * Fix a typo in Flat preset.
+
+ -- Juan A. Suarez Romero <jasuarez@igalia.com>  Fri, 23 Oct 2009 10:02:12 +0200
+
 mafw-gst-eq-renderer (0.1.2009.38-1-1mgr) unstable; urgency=low
 
   * Import mafw-gst-renderer 0.1.2009.38-1.
