@@ -6,12 +6,12 @@
 #     Author: Visa Smolander <visa.smolander@nokia.com>
 #
 # For mafw-gst-eq-renderer fork:
-#     Copyright (C) 2009 Igalia S.L.
+#     Copyright (C) 2009, 2010 Igalia S.L.
 #     Author: Juan A. Suarez Romero <jasuarez@igalia.com>
 #
 
 AC_PREREQ([2.53])
-AC_INIT([mafw-gst-eq-renderer], [0.1.2009.38-1-2mtr])
+AC_INIT([mafw-gst-eq-renderer], [0.1.2009.47-1-1mtr])
 
 AC_CONFIG_SRCDIR([libmafw-gst-renderer/mafw-gst-renderer.h])
 AC_CONFIG_HEADERS([config.h])

@@ -6,7 +6,7 @@
  *    Contact: Visa Smolander <visa.smolander@nokia.com>
  *
  * For mafw-gst-eq-renderer fork:
- *    Copyright (C) Igalia S.L.
+ *    Copyright (C) 2009, 2010 Igalia S.L.
  *    Author: Juan A. Suarez Romero <jasuarez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@
  * 02110-1301 USA
  *
  */
-
 #ifndef MAFW_GST_RENDERER_WORKER_H
 #define MAFW_GST_RENDERER_WORKER_H
 
@@ -155,10 +154,10 @@ struct _MafwGstRendererWorker {
 	 * again.
 	 */
 	gboolean in_ready;
-        GstElement *equalizer;
+    GstElement *equalizer;
 	GstElement *vsink;
 	GstElement *asink;
-        GstElement *abin;
+    GstElement *abin;
 	XID xid;
 	gboolean autopaint;
 	gint colorkey;

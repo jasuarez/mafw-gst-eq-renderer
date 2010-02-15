@@ -6,7 +6,7 @@
  *    Contact: Visa Smolander <visa.smolander@nokia.com>
  *
  * For mafw-gst-eq-renderer fork:
- *    Copyright (C) 2009 Igalia S.L.
+ *    Copyright (C) 2009, 2010 Igalia S.L.
  *    Author: Juan A. Suarez Romero <jasuarez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@
  * 02110-1301 USA
  *
  */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -63,6 +62,10 @@
 
 #define MAFW_GST_BUFFER_TIME  600000L
 #define MAFW_GST_LATENCY_TIME (MAFW_GST_BUFFER_TIME / 2)
+
+#define NSECONDS_TO_SECONDS(ns) ((ns)%1000000000 < 500000000?\
+                                 GST_TIME_AS_SECONDS((ns)):\
+                                 GST_TIME_AS_SECONDS((ns))+1)
 
 /* Private variables. */
 /* Global reference to worker instance, needed for Xerror handler */
@@ -629,8 +632,8 @@ static gboolean _seconds_duration_equal(gint64 duration1, gint64 duration2)
 {
 	gint64 duration1_seconds, duration2_seconds;
 
-	duration1_seconds = duration1 / GST_SECOND;
-	duration2_seconds = duration2 / GST_SECOND;
+	duration1_seconds = NSECONDS_TO_SECONDS(duration1);
+	duration2_seconds = NSECONDS_TO_SECONDS(duration2);
 
 	return duration1_seconds == duration2_seconds;
 }
@@ -648,7 +651,7 @@ static void _check_duration(MafwGstRendererWorker *worker, gint64 value)
 	}
 
 	if (right_query && value > 0) {
-		gint duration_seconds = value / GST_SECOND;
+		gint duration_seconds = NSECONDS_TO_SECONDS(value);
 
 		if (!_seconds_duration_equal(worker->media.length_nanos,
 					     value)) {
@@ -819,12 +822,44 @@ static void _do_pause_postprocessing(MafwGstRendererWorker *worker)
 	_add_ready_timeout(worker);
 }
 
+static void _report_playing_state(MafwGstRendererWorker * worker)
+{
+	if (worker->report_statechanges) {
+		switch (worker->mode) {
+		case WORKER_MODE_SINGLE_PLAY:
+			/* Notify play if we are playing in
+			 * single mode */
+			if (worker->notify_play_handler)
+				worker->notify_play_handler(
+					worker,
+					worker->owner);
+			break;
+		case WORKER_MODE_PLAYLIST:
+		case WORKER_MODE_REDUNDANT:
+			/* Only notify play when the "playlist"
+			   playback starts, don't notify play for each
+			   individual element of the playlist. */
+			if (worker->pl.notify_play_pending) {
+				if (worker->notify_play_handler)
+					worker->notify_play_handler(
+						worker,
+						worker->owner);
+				worker->pl.notify_play_pending = FALSE;
+			}
+			break;
+		default: break;
+		}
+	}
+}
+
 static void _handle_state_changed(GstMessage *msg, MafwGstRendererWorker *worker)
 {
 	GstState newstate, oldstate;
+	GstStateChange statetrans;
 	MafwGstRenderer *renderer = (MafwGstRenderer*)worker->owner;
 
 	gst_message_parse_state_changed(msg, &oldstate, &newstate, NULL);
+	statetrans = GST_STATE_TRANSITION(oldstate, newstate);
 	g_debug ("State changed: %d: %d -> %d", worker->state, oldstate, newstate);
 
 	/* If the state is the same we do nothing, otherwise, we keep
@@ -835,7 +870,7 @@ static void _handle_state_changed(GstMessage *msg, MafwGstRendererWorker *worker
 		worker->state = newstate;
 	}
 
-        if (GST_STATE_TRANSITION(oldstate, newstate) == GST_STATE_CHANGE_READY_TO_PAUSED &&
+        if (statetrans == GST_STATE_CHANGE_READY_TO_PAUSED &&
             worker->in_ready) {
                 /* Woken up from READY, resume stream position and playback */
                 g_debug("State changed to pause after ready");
@@ -861,10 +896,20 @@ static void _handle_state_changed(GstMessage *msg, MafwGstRendererWorker *worker
 	/* While buffering, we have to wait in PAUSED 
 	   until we reach 100% before doing anything */
 	if (worker->buffering) {
+	        if (statetrans == GST_STATE_CHANGE_PAUSED_TO_PLAYING) {
+			/* Mmm... probably the client issued a seek on the
+			 * stream and then a play/resume command right away,
+			 * so the stream got into PLAYING state while
+			 * buffering. When the next buffering signal arrives,
+			 * the stream will be PAUSED silently and resumed when
+			 * buffering is done (silently too), so let's signal
+			 * the state change to PLAYING here. */
+			_report_playing_state(worker);			
+		}
 		return;
 	}
 
-	switch (GST_STATE_TRANSITION(oldstate, newstate)) {
+	switch (statetrans) {
 	case GST_STATE_CHANGE_READY_TO_PAUSED:
 		if (worker->prerolling && worker->report_statechanges) {
 			/* PAUSED after pipeline has been
@@ -897,32 +942,9 @@ static void _handle_state_changed(GstMessage *msg, MafwGstRendererWorker *worker
 		worker->seek_position = -1;
                 worker->eos = FALSE;
 
-		if (worker->report_statechanges) {
-			switch (worker->mode) {
-			case WORKER_MODE_SINGLE_PLAY:
-				/* Notify play if we are playing in
-				 * single mode */
-				if (worker->notify_play_handler)
-					worker->notify_play_handler(
-						worker,
-						worker->owner);
-				break;
-			case WORKER_MODE_PLAYLIST:
-                        case WORKER_MODE_REDUNDANT:
-				/* Only notify play when the "playlist"
-				   playback starts, don't notify play for each
-				   individual element of the playlist. */
-				if (worker->pl.notify_play_pending) {
-					if (worker->notify_play_handler)
-						worker->notify_play_handler(
-							worker,
-							worker->owner);
-					worker->pl.notify_play_pending = FALSE;
-				}
-				break;
-			default: break;
-			}
-		}
+		/* Signal state change if needed */
+		_report_playing_state(worker);
+
 		/* Prevent blanking if we are playing video */
                 if (worker->media.has_visual_content) {
                         blanking_prohibit();
@@ -1004,59 +1026,12 @@ static void _current_metadata_add(MafwGstRendererWorker *worker,
 				  const gchar *key, GType type,
 				  const gpointer value)
 {
-	GValue *new_gval;
-
 	g_return_if_fail(value != NULL);
 
 	if (!worker->current_metadata)
 		worker->current_metadata = mafw_metadata_new();
 
-	if (type == G_TYPE_VALUE_ARRAY) {
-		GValueArray *values = (GValueArray *) value;
-
-		if (values->n_values == 1) {
-			GValue *gval = g_value_array_get_nth(values, 0);
-			new_gval = g_new0(GValue, 1);
-			g_value_init(new_gval, G_VALUE_TYPE(gval));
-			g_value_copy(gval, new_gval);
-
-			g_hash_table_insert(worker->current_metadata,
-					    g_strdup(key), new_gval);
-		} else {
-			GValueArray *new_gvalues = g_value_array_copy(values);
-
-			g_hash_table_insert(worker->current_metadata,
-					    g_strdup(key), new_gvalues);
-		}
-
-		return;
-	}
-
-	new_gval = g_new0(GValue, 1);
-	g_value_init(new_gval, type);
-
-	switch (type) {
-	case G_TYPE_INT:
-		g_value_set_int(new_gval, *((gint *) value));
-		break;
-	case G_TYPE_INT64:
-		g_value_set_int64(new_gval, *((gint64 *) value));
-		break;
-	case G_TYPE_STRING:
-		g_value_set_string(new_gval, g_strdup((gchar *) value));
-		break;
-	case G_TYPE_DOUBLE:
-		g_value_set_double(new_gval, *((gdouble *) value));
-		break;
-	case G_TYPE_BOOLEAN:
-		g_value_set_boolean(new_gval, *((gboolean *) value));
-		break;
-	default:
-		g_warning("Metadata type: %i is not being handled", type);
-		return;
-	}
-
-	g_hash_table_insert(worker->current_metadata, g_strdup(key), new_gval);
+	mafw_metadata_add_something(worker->current_metadata, key, type, 1, value);
 }
 
 static GHashTable* _build_tagmap(void)
@@ -1145,6 +1120,8 @@ static void _emit_tag(const GstTagList *list, const gchar *tag,
 
 				g_value_init(&utf8gval, G_TYPE_STRING);
 				g_value_take_string(&utf8gval, utf8);
+				_current_metadata_add(worker, mafwtag, G_TYPE_VALUE,
+					(const gpointer) &utf8gval);
 				g_value_array_append(values, &utf8gval);
 				g_value_unset(&utf8gval);
 			}
@@ -1154,16 +1131,16 @@ static void _emit_tag(const GstTagList *list, const gchar *tag,
 
 			g_value_init(&intgval, G_TYPE_INT);
 			g_value_transform(v, &intgval);
+			_current_metadata_add(worker, mafwtag, G_TYPE_VALUE,
+					(const gpointer) &intgval);
 			g_value_array_append(values, &intgval);
 			g_value_unset(&intgval);
 		} else {
+			_current_metadata_add(worker, mafwtag, G_TYPE_VALUE,
+					(const gpointer) v);
 			g_value_array_append(values, v);
 		}
 	}
-
-	/* Add the info to the current metadata. */
-	_current_metadata_add(worker, mafwtag, G_TYPE_VALUE_ARRAY,
-			      (const gpointer) values);
 
 	/* Emit the metadata. */
 	g_signal_emit_by_name(worker->owner, "metadata-changed", mafwtag,
@@ -1253,12 +1230,15 @@ static void _handle_buffering(MafwGstRendererWorker *worker, GstMessage *msg)
 			 * want that, application doesn't need to know
 			 * that internally the state changed to
 			 * PAUSED. */
-			gst_element_set_state(worker->pipeline,
-					      GST_STATE_PAUSED);
-			/* XXX this blocks till statechange. */
-			gst_element_get_state(worker->pipeline, NULL,
+			if (gst_element_set_state(worker->pipeline,
+					      GST_STATE_PAUSED) ==
+		    			GST_STATE_CHANGE_ASYNC)
+			{
+				/* XXX this blocks at most 2 seconds. */
+				gst_element_get_state(worker->pipeline, NULL,
 					      NULL,
-					      GST_CLOCK_TIME_NONE);
+					      2 * GST_SECOND);
+			}
 		}
 
                 if (percent >= 100) {
@@ -1302,12 +1282,16 @@ static void _handle_buffering(MafwGstRendererWorker *worker, GstMessage *msg)
 						"pipeline to PLAYING again");
 					_reset_volume_and_mute_to_pipeline(
 						worker);
-					gst_element_set_state(
+					if (gst_element_set_state(
 						worker->pipeline,
-						GST_STATE_PLAYING);
-					gst_element_get_state(
-						worker->pipeline, NULL, NULL,
-						GST_CLOCK_TIME_NONE);
+						GST_STATE_PLAYING) ==
+		    					GST_STATE_CHANGE_ASYNC)
+					{
+						/* XXX this blocks at most 2 seconds. */
+						gst_element_get_state(
+							worker->pipeline, NULL, NULL,
+							2 * GST_SECOND);
+					}
 				}
                         } else if (worker->state == GST_STATE_PLAYING) {
 				g_debug("buffering concluded, signalling "
@@ -1858,7 +1842,6 @@ static void _construct_pipeline(MafwGstRendererWorker *worker)
                              worker->asink, NULL);
         }
 
-
 	if (!worker->vsink) {
 		worker->vsink = gst_element_factory_make("xvimagesink", NULL);
 		if (!worker->vsink) {
@@ -2024,7 +2007,7 @@ gint mafw_gst_renderer_worker_get_position(MafwGstRendererWorker *worker)
 	if (worker->pipeline &&
             gst_element_query_position(worker->pipeline, &format, &time))
 	{
-		return (gint)(time / GST_SECOND);
+		return (gint)(NSECONDS_TO_SECONDS(time));
 	}
 	return -1;
 }
@@ -2316,10 +2299,13 @@ void mafw_gst_renderer_worker_pause(MafwGstRendererWorker *worker)
 	} else {
 		worker->report_statechanges = TRUE;
 
-		gst_element_set_state(worker->pipeline, GST_STATE_PAUSED);
-		/* XXX this blocks till statechange. */
-		gst_element_get_state(worker->pipeline, NULL, NULL,
-				      GST_CLOCK_TIME_NONE);
+		if (gst_element_set_state(worker->pipeline, GST_STATE_PAUSED) ==
+		    GST_STATE_CHANGE_ASYNC)
+		{
+			/* XXX this blocks at most 2 seconds. */
+			gst_element_get_state(worker->pipeline, NULL, NULL,
+				      2 * GST_SECOND);
+		}
 		blanking_allow();
 	}
 }
@@ -2336,11 +2322,26 @@ void mafw_gst_renderer_worker_resume(MafwGstRendererWorker *worker)
 	    !worker->prerolling) {
 		/* If we are buffering we cannot resume, but we know
 		 * that the pipeline will be moved to PLAYING as
-		 * stay_paused is FALSE, so we just activate realizing
-		 * the state_changes */
+		 * stay_paused is FALSE, so we just activate the state
+		 * change report, this way as soon as buffering is finished
+		 * the pipeline will be set to PLAYING and the state
+		 * change will be reported */
 		worker->report_statechanges = TRUE;
 		g_debug("Resumed while buffering, activating pipeline state "
 			"changes");
+		/* Notice though that we can receive the Resume before
+		   we get any buffering information. In that case
+		   we go with the "else" branch and set the pipeline to
+		   to PLAYING. However, it is possible that in this case
+		   we get the fist buffering signal before the
+		   PAUSED -> PLAYING state change. In that case, since we
+		   ignore state changes while buffering we never signal
+		   the state change to PLAYING. We can only fix this by
+		   checking, when we receive a PAUSED -> PLAYING transition
+		   if we are buffering, and in that case signal the state
+		   change (if we get that transition while buffering
+		   is on, it can only mean that the client resumed playback
+		   while buffering, and we must notify the state change) */
 	} else {
 		_do_play(worker);
 	}
@@ -2382,10 +2383,10 @@ MafwGstRendererWorker *mafw_gst_renderer_worker_new(gpointer owner)
 	worker->xid = 0;
 	worker->autopaint = TRUE;
 	worker->colorkey = -1;
-        worker->equalizer = NULL;
+    worker->equalizer = NULL;
 	worker->vsink = NULL;
 	worker->asink = NULL;
-        worker->abin = NULL;
+    worker->abin = NULL;
 	worker->tag_list = NULL;
 	worker->current_metadata = NULL;
 
