@@ -6,7 +6,7 @@
  *    Contact: Visa Smolander <visa.smolander@nokia.com>
  *
  * For mafw-gst-eq-renderer fork:
- *    Copyright (C) Igalia S.L.
+ *    Copyright (C) 2009, 2010 Igalia S.L.
  *    Author: Juan A. Suarez Romero <jasuarez@igalia.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@
  * 02110-1301 USA
  *
  */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -1027,11 +1026,14 @@ static void _signal_transport_actions_property_changed(MafwGstRenderer * self)
 			self->states[self->current_state]),
 		MAFW_PROPERTY_RENDERER_TRANSPORT_ACTIONS);
 
-	mafw_extension_emit_property_changed(
-		MAFW_EXTENSION(self),
-		MAFW_PROPERTY_RENDERER_TRANSPORT_ACTIONS,
-		value);
-
+        if (value) {
+                mafw_extension_emit_property_changed(
+                        MAFW_EXTENSION(self),
+                        MAFW_PROPERTY_RENDERER_TRANSPORT_ACTIONS,
+                        value);
+                g_value_unset(value);
+                g_free(value);
+        }
 }
 
 

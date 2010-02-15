@@ -7,7 +7,7 @@
 #
 # For mafw-gst-eq-renderer fork:
 #	Author: Juan A. Suarez Romero <jasuarez@igalia.com>
-#	Copyright (C) 2009 Igalia S.L.
+#	Copyright (C) 2009, 2010 Igalia S.L.
 #
 
 
