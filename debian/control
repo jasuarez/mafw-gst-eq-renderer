@@ -15,7 +15,7 @@ Standards-Version: 3.7.2
 Package: mafw-gst-eq-renderer
 Section: libs
 Architecture: any
-Depends: gconf2, ${shlibs:Depends}, ${misc:Depends}
+Depends: gconf2, ${shlibs:Depends}, ${misc:Depends}, gstreamer0.10-plugins-good-extra
 Description: MAFW gst renderer with equalizer plugin
  Renderer plugin for MAFW-gst-eq
 
