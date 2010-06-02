@@ -11,7 +11,7 @@
 #
 
 AC_PREREQ([2.53])
-AC_INIT([mafw-gst-eq-renderer], [0.1.2009.47-1-1mtr])
+AC_INIT([mafw-gst-eq-renderer], [0.2.2010.07-2-1mtr])
 
 AC_CONFIG_SRCDIR([libmafw-gst-renderer/mafw-gst-renderer.h])
 AC_CONFIG_HEADERS([config.h])
@@ -64,6 +64,8 @@ PKG_CHECK_MODULES(DEPS,
 		  totem-plparser
                   gconf-2.0 >= 2.0
 		  gnome-vfs-2.0
+                  mce
+                  dbus-1
 )
 
 dnl Check for GdkPixbuf, needed for dumping current frame

@@ -69,10 +69,10 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs ChangeLog
-	install debian/mafw-gst-eq-renderer.xsession \
-		debian/mafw-gst-eq-renderer/etc/X11/Xsession.post/31mafw-gst-eq-renderer
 	dh_installdocs
 	dh_install --sourcedir=debian/tmp -v
+	install debian/mafw-gst-eq-renderer.mafw.xsession \
+                debian/mafw-gst-eq-renderer/etc/X11/Xsession.post/32mafw-gst-eq-render
 	dh_link
 	dh_strip --dbg-package=mafw-gst-eq-renderer
 	dh_compress
@@ -92,7 +92,5 @@ distcheck: build
 vg:
 	dh_testdir
 	$(MAKE) -C "$(CURDIR)/tests" vg
-		
 
 .PHONY: build clean binary-indep binary-arch binary install distcheck vg
-

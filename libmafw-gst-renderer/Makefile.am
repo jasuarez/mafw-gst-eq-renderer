@@ -17,6 +17,7 @@ BUILT_SOURCES			= mafw-gst-renderer-marshal.c \
 
 mafw_gst_eq_renderer_la_SOURCES	= $(BUILT_SOURCES) \
 				  $(top_srcdir)/constants.h \
+				  keypad.c keypad.h \
 				  blanking.c blanking.h \
 				  mafw-gst-renderer.c mafw-gst-renderer.h \
 				  mafw-gst-renderer-utils.c mafw-gst-renderer-utils.h \
